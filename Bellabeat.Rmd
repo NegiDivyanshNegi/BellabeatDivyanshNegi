@@ -1,0 +1,288 @@
+---
+title: "Bellabeat Case Study - Divyansh Negi"
+output:
+  html_document: default
+  pdf_document: default
+date: "2022-08-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **_INTRODUCTION_**
+
+Welcome to the Bellabeat data analysis case study! In this case study, we will perform many real-world tasks of a junior data analyst. In order to answer the key business questions, we will follow the steps of the data analysis process: **ask, prepare, process, analyze, share, and act**.
+
+### Scenario
+
+In this study, we will focus on one of Bellabeat’s products and analyze smart device data to gain insight into how consumers are using their smart devices. The insights we discover will then help guide marketing strategy for the company. We will be presenting our analysis to the Bellabeat executive team along with our recommendations for Bellabeat’s marketing strategy.
+
+### About the Company Bellabeat
+
+Urška Sršen and Sando Mur founded Bellabeat, a high-tech company that manufactures health-focused smart products. Sršen used her background as an artist to develop beautifully designed technology that informs and inspires women around the world. Collecting data on activity, sleep, stress, and reproductive health has allowed Bellabeat to empower women with knowledge about their own health and habits. Since it was founded in 2013, Bellabeat has grown rapidly and quickly positioned itself as a tech-driven wellness company for women.
+
+## **_ASK phase_**
+
+### Identifying the business task:-
+
+* **What are some trends in smart device usage? How could these trends help influence Bellabeat marketing strategy ?**
+
+The company need to better target their marketing efforts into their customer's needs based on their usage of their fitness smart devices. And then, make high-level recommendations for how these trends can inform Bellabeat marketing strategy.
+
+* **Who are the main stakeholders ?** 
+
+The main stakeholders are Urška Sršen, Bellabeat’s co-founder and Chief Creative Officer; Sando Mur, Mathematician and Bellabeat’s cofounder; And also, we need to think about and work with the rest of the Bellabeat marketing analytics team.
+
+## **_PREPARE Phase_**
+
+In this phase, we will download and Import the dataset. Then make sure all the data is organized, credible, sorted and filtered.
+
+### Downloading the data
+
+We will be using public data that explores smart device users’ daily habits from FitBit Fitness Tracker Data. FitBit Fitness Tracker Data from Kaggle.
+
+FitBit Fitness Tracker Data : https://www.kaggle.com/datasets/arashnic/fitbit
+
+###
+
+### Uploading the data
+
+We'll be manually uploading all the data on Rstudio for the analysis in the working directory.
+
+### Loading the packages
+
+Now we'll load all the necessary packages that will help us in the analysis. And in the code we'll be using message=FALSE and warning=FALSE, to save space. And to prevent printing of the execution of the R code generated and the warning messages.
+
+```{r message=FALSE, warning=FALSE}
+# Installing packages
+install.packages("tidyverse")
+install.packages("lubridate")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("tidyr")
+```
+
+Now we'll load the packages.
+
+```{r message=FALSE, warning=FALSE}
+# Loading packages 
+library(tidyverse)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+```
+
+### Importing the data
+
+After uploading we'll be importing all dataset. Then we'll VIEW, CLEAN, FORMAT, and ORGANIZE the data for the analysis.
+
+* **dailyActivity_merged.csv**
+
+```{r}
+# Importing Activity dataset :
+
+Activity <- read.csv("dailyActivity_merged.csv")
+head(Activity)
+colnames(Activity)
+str(Activity)
+```
+* **dailyCalories_merged.csv**
+
+```{r}
+# Importing Calories dataset :
+Calories <- read.csv("dailyCalories_merged.csv")
+head(Calories)
+colnames(Calories)
+str(Calories)
+```
+
+* **dailyIntensities_merged.csv**
+
+```{r}
+# Importing Intensities dataset :
+Intensities <- read.csv("dailyIntensities_merged.csv")
+head(Intensities)
+colnames(Intensities)
+str(Intensities)
+```
+
+* **heartrate_seconds_merged.csv**
+
+```{r}
+# Importing Heartrate dataset :
+Heartrate <- read.csv("heartrate_seconds_merged.csv")
+head(Heartrate)
+colnames(Heartrate)
+str(Heartrate)
+```
+
+* **sleepDay_merged.csv**
+
+```{r}
+# Importing Sleep dataset :
+Sleep <- read.csv("sleepDay_merged.csv")
+head(Sleep)
+colnames(Sleep)
+str(Sleep)
+```
+
+* **weightLogInfo_merged.csv**
+
+```{r}
+# Importing Weight dataset :
+Weight <- read.csv("weightLogInfo_merged.csv")
+head(Weight)
+colnames(Weight)
+str(Weight)
+```
+All datasets have been improrted.
+
+## **_Process Phase_**
+
+### Cleaning
+
+Now, we'll Process, Clean and Organize the dataset for analysis.
+
+We'll install and load the packages for cleaning:
+
+```{r message=FALSE, warning=FALSE}
+# Installing package
+install.packages("tidyverse")
+library(janitor)
+```
+
+We'll clean the names of the data using clean_names().
+
+```{r eval=FALSE}
+clean_names(Activity)
+clean_names(Calories)
+clean_names(Weight)
+clean_names(Heartrate)
+clean_names(Intensities)
+clean_names(Sleep)
+```
+
+And some other cleaning steps we performed with the data :
+
+* For Dataset (Activity, Calories and Intensities): No Spelling errors, Misfiled values, Missing values, Extra and blank space, no duplicated were found.
+
+* For Sleep data : 3 duplicates were found and removed.
+
+* For Weight data : too many missing values were found in one column. So we removed that column.
+
+## **_ANALYSE Phase_**
+
+After storing all the data and preparing it for analysis. We can start the analysis.
+
+Let's look at the total number of participants in each data sets:
+
+```{r}
+n_distinct(Activity$Id)
+n_distinct(Calories$Id)
+n_distinct(Intensities$Id)
+n_distinct(Heartrate$Id)
+n_distinct(Sleep$Id)
+n_distinct(Weight$Id)
+```
+
+So, there are 33 participants in the activity, calories and intensities data sets. 24 participants in the Sleep data. And only 14 participants for Heartrate, and only 8 in the weight data set. 8 and 14 participants are not significant to make any recommendations and conclusions based on these dataset.
+
+So I will focus on these datasets for my analysis: Activity, Calories, Intensities and Sleep.
+
+Here are some quick summary statistics about each data frame.
+
+For the Activity dataframe:
+
+```{r}
+# Activity
+Activity %>%  
+  select(TotalSteps,
+         TotalDistance,
+         SedentaryMinutes, Calories) %>%
+  summary()
+```
+
+Exploring the number of Intense active participants :
+
+```{r}
+# Explore number of active minutes per category
+Intensities %>%
+  select(VeryActiveMinutes, FairlyActiveMinutes, LightlyActiveMinutes, SedentaryMinutes) %>%
+  summary()
+```
+
+For the Calories dataframe:
+
+```{r}
+# Calories
+Calories %>%
+  select(Calories) %>%
+  summary()
+```
+
+For the Sleep dataframe:
+
+```{r}
+# Sleep
+Sleep %>%
+  select(TotalSleepRecords, TotalMinutesAsleep, TotalTimeInBed) %>%
+  summary()
+```
+
+For the Weight dataframe:
+
+```{r}
+# Weight
+Weight %>%
+  select(WeightKg, Fat) %>%
+  summary()
+```
+### Findings:
+
+* The average sedentary time is too high (more than 16 hours). Which can be reduced with a good marketing strategy.
+* The majority of the participants are lightly active. With a high sedentary time.
+* Participants sleep 1 time for an average of 7 hours.
+* Average total steps per day (which is 7638) is a little bit less than recommended by the CDC. According to the CDC research, taking 8,000 steps per day was associated with a 51% lower risk for all-cause mortality (or death from all causes). And taking 12,000 steps per day was associated with a 65% lower risk compared with taking 4,000 steps.
+
+## **_SHARE and ACT Phases_**
+
+Now we'll visualize some findings.
+
+### * **Relationship between Steps and Sedentary time**
+
+```{r}
+ggplot(data=Activity, aes(x=TotalSteps, y=SedentaryMinutes)) + geom_point() + geom_smooth() + labs(title="Total Steps vs. Sedentary Minutes")
+```
+We can see a negative correlation between Steps and Sedentary time. The more Sedentary time you have, the less Steps you're taking during the day. This data shows that the company need to market more the customer segments with high Sedentary time. And to do that, the company needs to find ways to get customers get started in walking more and also measure their daily steps.
+
+### * **Relationship between Minutes Asleep and Time in Bed**
+
+```{r}
+ggplot(data=Sleep, aes(x=TotalMinutesAsleep, y=TotalTimeInBed)) + geom_line() +geom_smooth() + labs(title ="Total Minutes Asleep vs. Total Time In Bed")
+```
+We can see here an almost completely linear trend between Minutes Asleep and Time in Bed. So to help users improve their sleep, the company should consider using notification to go to sleep.
+
+### * **Relationship between Steps and Calories**
+
+```{r}
+ggplot(data=Activity, aes(x=TotalSteps, y=Calories)) + geom_point() + geom_smooth() + labs(title="Total Steps vs. Calories")
+```
+We can see here a positive correlation between Total Steps and Calories. The more active we are, the more calories we will burn.
+
+## **_Conclusions & Recommandations_**
+
+So, collecting data on activity, sleep, stress, etc. will allow the company Bellabeat to empower the customers with knowledge about their own health and daily habits. The company Bellabeat is growing rapidly and quickly positioned itself as a tech-driven wellness company for their customers.
+
+By analyzing the FitBit Fitness Tracker Data set, We have found some insights that would help influence Bellabeat marketing strategy.
+
+* The average sedentary time is too high for the users of the app (more than 16 hours). And definitely needs to be reduced with a good marketing strategy. So, the data shows that the company need to market more to the customer segment with a high Sedentary time. And to do that, the company needs to find ways to get customers started in walking more by measuring their daily steps (+ notifications).
+
+* Participants sleep 1 time for an average of 7 hours. To help users improve their sleep, Bellabeat should consider using app notifications to go to bed.
+
+* The average total steps per day (which is 7638) is a little bit less than recommended by the CDC. According to the CDC research, taking 8,000 steps per day was associated with a 51% lower risk for all-cause mortality (or death from all causes). And taking 12,000 steps per day was associated with a 65% lower risk compared with taking 4,000 steps. So, Bellabeat can encourage people to take at least 8,000 steps per day by explaining the healthy benefits of doing that.
+
+* For customers who want to lose weight, it can be a good idea to control daily calorie consumption. And Bellabeat can suggest some ideas for low-calorie healthy food.
+
+**Hence, the case study has been concluded.**
